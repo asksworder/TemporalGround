@@ -1,0 +1,13 @@
+Dimension	2
+IndexCapacity	64
+LeafCapacity	64
+IndexPoolCapacity	64
+LeafPoolCapacity	64
+RegionPoolCapacity	512
+PointPoolCapacity	256
+NearMinimumOverlapFactor	32
+FillFactor	0.7
+SplitDistributionFactor	0.4
+ReinsertFactor	0.3
+StrongVersionOverflow	0.6
+VersionUnderflow	0.1

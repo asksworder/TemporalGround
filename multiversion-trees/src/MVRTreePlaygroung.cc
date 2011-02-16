@@ -80,20 +80,20 @@ void getProperties(Tools::PropertySet& tree_properties, const char* config_file)
             fin >> property_name >> string_value;
             if (!fin.good())
                 continue;
-            if (property_name.compare("Dimension") || property_name.compare(
-                    "IndexCapacity") || property_name.compare("LeafCapacity")
-                    || property_name.compare("IndexPoolCapacity")
-                    || property_name.compare("LeafPoolCapacity")
-                    || property_name.compare("RegionPoolCapacity")
-                    || property_name.compare("PointPoolCapacity")
-                    || property_name.compare("NearMinimumOverlapFactor")) {
+            if (!property_name.compare("Dimension") || !property_name.compare(
+                    "IndexCapacity") || !property_name.compare("LeafCapacity")
+                    || !property_name.compare("IndexPoolCapacity")
+                    || !property_name.compare("LeafPoolCapacity")
+                    || !property_name.compare("RegionPoolCapacity")
+                    || !property_name.compare("PointPoolCapacity")
+                    || !property_name.compare("NearMinimumOverlapFactor")) {
                 value.m_varType = Tools::VT_ULONG;
                 value.m_val.ulVal = atol(string_value.c_str());
-            } else if (property_name.compare("FillFactor")
-                    || property_name.compare("SplitDistributionFactor")
-                    || property_name.compare("ReinsertFactor")
-                    || property_name.compare("StrongVersionOverflow")
-                    || property_name.compare("VersionUnderflow")) {
+            } else if (!property_name.compare("FillFactor")
+                    || !property_name.compare("SplitDistributionFactor")
+                    || !property_name.compare("ReinsertFactor")
+                    || !property_name.compare("StrongVersionOverflow")
+                    || !property_name.compare("VersionUnderflow")) {
                 value.m_varType = Tools::VT_DOUBLE;
                 value.m_val.dblVal = atof(string_value.c_str());
             } else {
@@ -136,6 +136,7 @@ int main(int argc, char** argv) {
             // Load the properties
             Tools::PropertySet tree_properties;
             getProperties(tree_properties, argv[4]);
+            cout << "List Properties:\n " << tree_properties << endl;
             ifstream fin(argv[4]);
             if (!fin) {
                 cerr << "Failed to load configure file: " << argv[4] << "."
