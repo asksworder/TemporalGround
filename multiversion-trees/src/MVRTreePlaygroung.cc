@@ -25,10 +25,12 @@ public:
     size_t m_index_io;
     size_t m_leaf_io;
 
-    PrintVisitor(): m_index_io(0), m_leaf_io(0) {}
+    PrintVisitor() :
+        m_index_io(0), m_leaf_io(0) {
+    }
 
     void visitNode(const INode& n) {
-        if(n.isLeaf())
+        if (n.isLeaf())
             m_leaf_io++;
         else
             m_index_io++;
@@ -40,7 +42,11 @@ public:
      * @param d
      */
     void visitData(const IData& d) {
-        cout << d.getIdentifier() << endl;
+        IShape* shape_data;
+        d.getShape(&shape_data);
+        Region region;
+        shape_data->getMBR(region);
+        cout << "Get:\t" << d.getIdentifier() << "\t" << region << endl;
     }
 
     void visitData(std::vector<const IData*>& v) {
@@ -127,7 +133,7 @@ int main(int argc, char** argv) {
                         *storage_manager, 32, false);
 
         ISpatialIndex* tree;
-        size_t time, count;
+        size_t time = 0, count = 0, rec_id;
         Tools::Random rand;
         double plow[2], phigh[2];
 
@@ -164,7 +170,12 @@ int main(int argc, char** argv) {
                 if (rand.nextUniformDouble() >= 0.8)
                     time++;
                 TimeRegion temp_region = TimeRegion(plow, phigh, time, time, 2);
-                tree->insertData(0, 0, temp_region, 1);
+                rec_id = (size_t)rand.nextUniformUnsignedLong(0, 20);
+                cout << "I\t" << rec_id << "\t" << time << "\t" << plow[0] << "\t" << plow[1]
+                        << "\t" << phigh[0] << "\t" << phigh[1] << endl;
+                //cout << "set object " << rec_id + 1 << " rect from " << plow[0] << "," << plow[1]
+                //                        << " to " << phigh[0] << "," << phigh[1] << "fs empty border " << rec_id + 1 << endl;
+                tree->insertData(0, 0, temp_region, rec_id);
                 count++;
             }
 
@@ -183,10 +194,15 @@ int main(int argc, char** argv) {
             phigh[0] = plow[0] + rand.nextUniformDouble(0.001, 0.2);
             phigh[1] = plow[1] + rand.nextUniformDouble(0.001, 0.2);
             TimeRegion temp_region = TimeRegion(plow, phigh,
-                    rand.nextUniformUnsignedLong(0, time / 2),
-                    rand.nextUniformUnsignedLong(time / 2 + 1, time), 2);
+                    rand.nextUniformDouble(0.0, 0.5) * time,
+                    rand.nextUniformDouble(0.5, 1) * time, 2);
 
             // Do Query
+            cout << "Q\t" << temp_region.m_startTime << "\t"
+                    << temp_region.m_endTime << "\t" << temp_region.m_pLow[0]
+                    << "\t" << temp_region.m_pLow[1] << "\t"
+                    << temp_region.m_pHigh[0] << "\t" << temp_region.m_pHigh[1]
+                    << endl;
             tree->intersectsWithQuery(temp_region, visitor);
             count++;
         }
@@ -197,6 +213,7 @@ int main(int argc, char** argv) {
         SpaceInspectStrategy qs;
         tree->queryStrategy(qs);
 
+        cerr << "Total time: " << time << endl;
         cerr << "Indexed space: " << qs.m_indexedSpace << endl;
         cerr << "Operations: " << count << endl;
         cerr << *tree;
